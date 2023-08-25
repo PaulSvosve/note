@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes App</title>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    const root = document.getElementById('root');
+
+    // Create a form to add a new note
+    const titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    titleInput.placeholder = 'Title';
+    
+    const contentTextarea = document.createElement('textarea');
+    contentTextarea.placeholder = 'Content';
+    
+    const addButton = document.createElement('button');
+    addButton.textContent = 'Add Note';
+    addButton.addEventListener('click', addNote);
+
+    // Display existing notes
+    const notesContainer = document.createElement('div');
+
+    root.appendChild(titleInput);
+    root.appendChild(contentTextarea);
+    root.appendChild(addButton);
+    root.appendChild(notesContainer);
+
+    // Fetch and display existing notes
+    async function fetchNotes() {
+      const response = await axios.get('/notes'); // Make sure to include the axios library
+      const notes = response.data;
+
+      notesContainer.innerHTML = ''; // Clear previous notes
+
+      notes.forEach(note => {
+        const noteDiv = document.createElement('div');
+        
+        const titleHeading = document.createElement('h2');
+        titleHeading.textContent = note.title;
+        
+        const contentParagraph = document.createElement('p');
+        contentParagraph.textContent = note.content;
+        
+        noteDiv.appendChild(titleHeading);
+        noteDiv.appendChild(contentParagraph);
+        
+        notesContainer.appendChild(noteDiv);
+      });
+    }
+
+    // Add a new note
+    async function addNote() {
+      const newNote = {
+        title: titleInput.value,
+        content: contentTextarea.value
+      };
+      
+      await axios.post('/notes', newNote); // Make sure to adjust the API endpoint
+      titleInput.value = '';
+      contentTextarea.value = '';
+      fetchNotes();
+    }
+
+    // Fetch notes on initial load
+    fetchNotes();
+  </script>
+</body>
+</html>
+

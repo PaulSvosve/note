@@ -1,0 +1,28 @@
+version: '3'
+services:
+  backend:
+    image: node:14
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    command: sh -c "npm install express mongoose body-parser && node server.js"  # Corrected command
+    depends_on:
+      - mongodb
+
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "8089:80"
+    volumes:
+      - ./frontend/build:/usr/share/nginx/html
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db
